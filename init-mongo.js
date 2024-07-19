@@ -1,2 +1,2 @@
-db = db.getSiblingDB('restapplication');
+db = db.getSiblingDB('restaurant');
 db.createCollection('food');
