@@ -50,7 +50,7 @@ func CreateFood() gin.HandlerFunc {
 		}
 		validationErr := validate.Struct(food)
 		if validationErr != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
 			return
 		}
 		err := menuCollection.FindOne(ctx, bson.M{"menu_id": food.Menu_id}).Decode(&menu)
