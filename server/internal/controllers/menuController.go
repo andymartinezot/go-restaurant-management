@@ -14,14 +14,6 @@ import (
 
 func GetMenus() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-	}
-}
-
-var menuCollection *mongo.Collection = database.OpenCollection(database.Client, "menu")
-
-func GetMenu() gin.HandlerFunc {
-	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		result, err := menuCollection.Find(context.TODO(), bson.M{})
 		defer cancel()
@@ -33,6 +25,14 @@ func GetMenu() gin.HandlerFunc {
 			log.Fatal(err)
 		}
 		c.JSON(http.StatusOK, allMenus)
+	}
+}
+
+var menuCollection *mongo.Collection = database.OpenCollection(database.Client, "menu")
+
+func GetMenu() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
 	}
 }
 
