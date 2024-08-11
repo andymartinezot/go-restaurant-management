@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -85,6 +86,57 @@ func CreateInvoice() gin.HandlerFunc {
 
 func UpdateInvoice() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		invoiceId := c.Param("invoice_id")
+		var invoice models.Invoice
+
+		if err := c.BindJSON(&invoice); err != nil {
+			c.JSON(http.StatusBadRequest, gin{"error": err.Error()})
+			return
+		}
+
+		filter := bson.M{"invoice_id", invoiceId}
+
+		var updateObj primitive.D
+
+		if invoice.Payment_method != nil {
+
+		}
+
+		if invoice.Payment_status != nil {
+
+		}
+
+		invoice.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+		updateObj = append(updateObj, bson.E{"updated_at", invoice.Updated_at})
+
+		upsert := true
+		opt := options.UpdateOptions{
+			Upsert: &upsert,
+		}
+
+		status := "PENDING"
+		if invoice.Payment_status == nil {
+			invoice.Payment_status = &status
+		}
+
+		result, err := invoiceCollection.UpdateOne(
+			ctx,
+			filter,
+			bson.D{
+				{"$set", updateObj},
+			},
+			&opt,
+		)
+
+		if err != nil {
+			msg := fmt.Sprintf("invoice item update failed")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
+			return
+		}
+
+		defer cancel()
+		c.JSON(http.StatusOK, result)
 
 	}
 }
